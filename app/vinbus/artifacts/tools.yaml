@@ -1,0 +1,216 @@
+- name: geocoding_search
+  description: 'Tìm kiếm toạ độ GPS của một ĐỊA CHỈ hoặc ĐỊA ĐIỂM bằng văn bản. CHÚ
+    Ý: CHỈ TRUYỀN TỪ KHÓA CHÍNH (ví dụ: ''Ngã tư Sở'', ''Vinhomes Ocean Park''), TUYỆT
+    ĐỐI KHÔNG truyền nguyên câu văn dài hoặc số tuyến xe (ví dụ: KHÔNG TRUYỀN ''Tìm
+    tuyến xe 140 hcm'').'
+  parameters:
+    type: object
+    properties:
+      region_code:
+        type: string
+        description: 'Mã khu vực (ví dụ: ''hn'' cho Hà Nội, ''hcm'' cho Hồ Chí Minh)'
+      content:
+        type: string
+        description: 'Tên địa điểm hoặc địa chỉ cần tìm (ví dụ: ''Ngã tư Sở'', ''S2.05'')'
+    required:
+    - region_code
+    - content
+- name: get_near_stations
+  description: Tìm các trạm xe buýt lân cận trong bán kính r mét từ tọa độ cho trước.
+  parameters:
+    type: object
+    properties:
+      lat:
+        type: number
+        description: Vĩ độ (latitude)
+      lng:
+        type: number
+        description: Kinh độ (longitude)
+      radius:
+        type: integer
+        description: 'Bán kính tìm kiếm tính bằng mét (ví dụ: 1000)'
+      region_code:
+        type: string
+        description: 'Mã khu vực (ví dụ: ''hn'')'
+    required:
+    - lat
+    - lng
+    - radius
+    - region_code
+- name: get_directions
+  description: Tìm lộ trình xe buýt tối ưu từ điểm A đến điểm B. Trả về nhiều gợi
+    ý lộ trình, bao gồm thời gian đi, số trạm đi qua, và các tuyến xe.
+  parameters:
+    type: object
+    properties:
+      start_lat:
+        type: number
+        description: Vĩ độ điểm đi
+      start_lng:
+        type: number
+        description: Kinh độ điểm đi
+      end_lat:
+        type: number
+        description: Vĩ độ điểm đến
+      end_lng:
+        type: number
+        description: Kinh độ điểm đến
+      region_code:
+        type: string
+        description: 'Mã khu vực (ví dụ: ''hn'')'
+    required:
+    - start_lat
+    - start_lng
+    - end_lat
+    - end_lng
+    - region_code
+- name: get_station_detail
+  description: Lấy thông tin chi tiết của một trạm xe buýt và các tuyến xe đi qua
+    trạm đó.
+  parameters:
+    type: object
+    properties:
+      station_id:
+        type: integer
+        description: 'ID của trạm xe buýt (ví dụ: 1234)'
+      region_code:
+        type: string
+        description: 'Mã khu vực (ví dụ: ''hn'')'
+    required:
+    - station_id
+    - region_code
+- name: get_eta
+  description: Lấy thời gian dự kiến (ETA) của các xe buýt sắp tới một trạm xe cụ
+    thể.
+  parameters:
+    type: object
+    properties:
+      region_code:
+        type: string
+        description: 'Mã khu vực (ví dụ: ''hn'')'
+      station_id:
+        type: integer
+        description: 'ID của trạm xe buýt (ví dụ: 1234)'
+    required:
+    - region_code
+    - station_id
+- name: get_bus_detail_at_station
+  description: Lấy tọa độ GPS (kinh độ, vĩ độ) hiện tại. route_id và station_id có
+    thể lấy từ kết quả của get_eta (dùng routeId và currentStationId). bus_id là mã
+    xe busId (ví dụ 50E21494).
+  parameters:
+    type: object
+    properties:
+      region_code:
+        type: string
+        description: 'Mã khu vực (ví dụ: ''hn'', ''hcm'')'
+      station_id:
+        type: integer
+        description: ID của trạm xe buýt
+      route_id:
+        type: integer
+        description: ID của tuyến đường (route_id)
+      bus_id:
+        type: string
+        description: Mã định danh của xe buýt (busId hoặc vehicleNumber, ví dụ '29B19040')
+    required:
+    - region_code
+    - station_id
+    - route_id
+    - bus_id
+- name: search_route
+  description: 'Tìm kiếm thông tin tổng quan của một tuyến xe buýt (ví dụ: tìm tuyến
+    140, tuyến E03). Trả về ID tuyến, tên tuyến, giờ hoạt động, tần suất.'
+  parameters:
+    type: object
+    properties:
+      region_code:
+        type: string
+        description: 'Mã khu vực (ví dụ: ''hn'', ''hcm'')'
+      route_keyword:
+        type: string
+        description: 'Từ khóa tên tuyến hoặc số tuyến (ví dụ: ''140'', ''E03''). CHỈ
+          TRUYỀN SỐ TUYẾN/TÊN TUYẾN, KHÔNG TRUYỀN NGUYÊN CÂU DÀI.'
+    required:
+    - region_code
+    - route_keyword
+- name: get_route_stations
+  description: Lấy danh sách các trạm dừng (station_id, tên trạm, địa chỉ) thuộc một
+    tuyến xe buýt (route_id) cụ thể. TUYỆT ĐỐI KHÔNG dùng routeId truyền vào cho tham
+    số station_id của các hàm khác, phải dùng hàm này để lấy station_id trước.
+  parameters:
+    type: object
+    properties:
+      region_code:
+        type: string
+        description: 'Mã khu vực (ví dụ: ''hn'', ''hcm'')'
+      route_id:
+        type: integer
+        description: 'ID của tuyến xe buýt (routeId, ví dụ: 103110)'
+    required:
+    - region_code
+    - route_id
+- name: show_route_map
+  description: Hiển thị lộ trình lên bản đồ thật cho người dùng xem.
+  parameters:
+    type: object
+    properties:
+      start_lat:
+        type: number
+      start_lng:
+        type: number
+      end_lat:
+        type: number
+      end_lng:
+        type: number
+      region_code:
+        type: string
+    required:
+    - start_lat
+    - start_lng
+    - end_lat
+    - end_lng
+    - region_code
+- name: propose_trip_plan
+  description: 'Đề xuất một kế hoạch chuyến đi (Trip Plan) cho người dùng xác nhận.
+    (JIT Tracker) để liên tục giám sát xe buýt sắp tới và báo động cho người dùng
+    khi đến giờ đi bộ ra bến. BẮT BUỘC: Bạn phải có đủ tọa độ điểm đi (start) và điểm
+    đến (end) để gọi tool này (Sử dụng get_directions hoặc geocoding_search để lấy
+    nếu chưa có).'
+  parameters:
+    type: object
+    properties:
+      region_code:
+        type: string
+        description: Mã khu vực (hn, hcm, pq).
+      boarding_station_id:
+        type: integer
+        description: ID của trạm chờ xe.
+      route_no:
+        type: string
+        description: 'Tuyến xe buýt cần theo dõi (ví dụ: ''140'', ''E01'').'
+      walk_time_mins:
+        type: integer
+        description: Thời gian đi bộ ước tính ra bến (tính bằng phút). Nếu không rõ,
+          mặc định là 5.
+      start_lat:
+        type: number
+        description: Vĩ độ điểm xuất phát của người dùng
+      start_lng:
+        type: number
+        description: Kinh độ điểm xuất phát của người dùng
+      end_lat:
+        type: number
+        description: Vĩ độ điểm đến mong muốn
+      end_lng:
+        type: number
+        description: Kinh độ điểm đến mong muốn
+    required:
+    - region_code
+    - boarding_station_id
+    - route_no
+    - walk_time_mins
+    - start_lat
+    - start_lng
+    - end_lat
+    - end_lng
